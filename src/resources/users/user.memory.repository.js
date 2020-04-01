@@ -31,7 +31,7 @@ const updateUser = async (userId, data) => {
   users[userIndex] = assign(users[userIndex], data);
   return users[userIndex];
 };
-const createUser = async (userId, data) => {
+const createUser = async data => {
   const user = new User(data);
   users.push(user);
   return user;

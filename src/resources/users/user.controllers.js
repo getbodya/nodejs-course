@@ -31,16 +31,9 @@ const updateUser = async (req, res) => {
 };
 
 const createUser = async (req, res) => {
-  const {
-    body,
-    params: { userId }
-  } = req;
-  const user = await usersService.createUser(userId, body);
-  if (!isNil(user)) {
-    res.json(User.toResponse(user));
-  } else {
-    res.json({});
-  }
+  const { body } = req;
+  const user = await usersService.createUser(body);
+  res.json(User.toResponse(user));
 };
 
 const deleteUser = async (req, res) => {
