@@ -1,4 +1,4 @@
-const { find } = require('lodash');
+const { find, findIndex, assign, remove } = require('lodash');
 const Board = require('./boards.model');
 
 const boards = [
@@ -56,8 +56,20 @@ const createBoard = async boardData => {
 
 const getBoard = async boardId => find(boards, { id: boardId });
 
+const updateBoard = async (boardId, data) => {
+  const boardIndex = findIndex(boards, { id: boardId });
+  boards[boardIndex] = assign(boards[boardIndex], data);
+  return boards[boardIndex];
+};
+
+const deleteBoard = async boardId => {
+  remove(boards, { id: boardId });
+};
+
 module.exports = {
   getAll,
   createBoard,
-  getBoard
+  getBoard,
+  updateBoard,
+  deleteBoard
 };

@@ -22,8 +22,31 @@ const getBoard = async (req, res) => {
   }
 };
 
+const updateBoard = async (req, res) => {
+  const {
+    body,
+    params: { boardId }
+  } = req;
+
+  const board = await boardService.updateBoard(boardId, body);
+
+  if (!isNil(board)) {
+    res.json(board);
+  } else {
+    res.json({});
+  }
+};
+
+const deleteBoard = async (req, res) => {
+  const { boardId } = req.params;
+  await boardService.deleteBoard(boardId);
+  res.status(204).send();
+};
+
 module.exports = {
   getBoards,
   createBoard,
-  getBoard
+  getBoard,
+  updateBoard,
+  deleteBoard
 };

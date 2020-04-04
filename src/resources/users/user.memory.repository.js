@@ -13,12 +13,6 @@ const users = [
     name: 'USER2',
     login: 'user2',
     password: 'P@22w0rd'
-  },
-  {
-    id: '3',
-    name: 'USER3',
-    login: 'user3',
-    password: 'P@33w0rd'
   }
 ];
 
@@ -31,11 +25,13 @@ const updateUser = async (userId, data) => {
   users[userIndex] = assign(users[userIndex], data);
   return users[userIndex];
 };
+
 const createUser = async data => {
   const user = new User(data);
   users.push(user);
   return user;
 };
+
 const deleteUser = async userId => {
   remove(users, { id: userId });
 };
