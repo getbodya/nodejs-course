@@ -21,7 +21,6 @@ const createTask = async (req, res) => {
 const getTask = async (req, res) => {
   const { boardId, taskId } = req.params;
   const task = await taskService.getTask(boardId, taskId);
-  console.log(task);
   res.status(200).json(task);
 };
 

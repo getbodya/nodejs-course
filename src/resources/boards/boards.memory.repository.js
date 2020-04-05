@@ -1,75 +1,81 @@
-const { find, findIndex, assign, remove } = require('lodash');
+const { find, findIndex, assign, remove, size } = require('lodash');
 const Board = require('./boards.model');
 
-const boards = [
-  {
-    id: 'boadrdId1',
-    title: '1board',
-    columns: [
+class BoardRepo {
+  constructor() {
+    this.boards = [
       {
-        id: '1-1-column',
-        title: '1column',
-        order: 0
+        id: 'boadrdId1',
+        title: '1board',
+        columns: [
+          {
+            id: '1-1-column',
+            title: '1column',
+            order: 0
+          },
+          {
+            id: '1-2-column',
+            title: '2column',
+            order: 1
+          },
+          {
+            id: '1-3-column',
+            title: '3column',
+            order: 2
+          }
+        ]
       },
       {
-        id: '1-2-column',
-        title: '2column',
-        order: 1
-      },
-      {
-        id: '1-3-column',
-        title: '3column',
-        order: 2
+        id: 'boadrdId2',
+        title: '2board',
+        columns: [
+          {
+            id: '2-1-column',
+            title: '1column',
+            order: 0
+          },
+          {
+            id: '2-2-column',
+            title: '2column',
+            order: 1
+          },
+          {
+            id: '2-3-column',
+            title: '3column',
+            order: 2
+          }
+        ]
       }
-    ]
-  },
-  {
-    id: 'boadrdId2',
-    title: '2board',
-    columns: [
-      {
-        id: '2-1-column',
-        title: '1column',
-        order: 0
-      },
-      {
-        id: '2-2-column',
-        title: '2column',
-        order: 1
-      },
-      {
-        id: '2-3-column',
-        title: '3column',
-        order: 2
-      }
-    ]
+    ];
   }
-];
 
-const getAll = async () => boards;
+  async getAll() {
+    return this.boards;
+  }
 
-const createBoard = async boardData => {
-  const newBoard = new Board(boardData);
-  boards.push(newBoard);
-  return newBoard;
-};
+  async getById(id) {
+    return find(this.boards, { id });
+  }
 
-const getBoard = async boardId => find(boards, { id: boardId });
+  async create(data) {
+    const newBoard = new Board(data);
+    this.boards.push(newBoard);
+    return newBoard;
+  }
 
-const updateBoard = async (boardId, data) => {
-  const boardIndex = findIndex(boards, { id: boardId });
-  boards[boardIndex] = assign(boards[boardIndex], data);
-  return boards[boardIndex];
-};
+  async update(boardId, data) {
+    const boardIndex = findIndex(this.boards, { id: boardId });
+    this.boards[boardIndex] = assign(this.boards[boardIndex], data);
+    return this.boards[boardIndex];
+  }
 
-const deleteBoard = async boardId => {
-  remove(boards, { id: boardId });
-};
+  async delete(boardId) {
+    const removedBoard = remove(this.boards, { id: boardId });
+    if (size(removedBoard)) {
+      return true;
+    }
+    return false;
+  }
+}
 
-module.exports = {
-  getAll,
-  createBoard,
-  getBoard,
-  updateBoard,
-  deleteBoard
-};
+module.exports = new BoardRepo();

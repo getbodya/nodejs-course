@@ -39,8 +39,12 @@ const updateBoard = async (req, res) => {
 
 const deleteBoard = async (req, res) => {
   const { boardId } = req.params;
-  await boardService.deleteBoard(boardId);
-  res.status(204).send();
+  const isRemoved = await boardService.deleteBoard(boardId);
+  if (isRemoved) {
+    res.status(204).send();
+  } else {
+    res.status(404).send();
+  }
 };
 
 module.exports = {
