@@ -1,5 +1,6 @@
-const { find, findIndex, assign, remove, size } = require('lodash');
+const { find, findIndex, assign, remove, isEmpty } = require('lodash');
 const Board = require('./boards.model');
+const TaskRepo = require('../tasks/task.memory.repository');
 
 class BoardRepo {
   constructor() {
@@ -71,10 +72,11 @@ class BoardRepo {
 
   async delete(boardId) {
     const removedBoard = remove(this.boards, { id: boardId });
-    if (size(removedBoard)) {
-      return true;
+    if (isEmpty(removedBoard)) {
+      return false;
     }
-    return false;
+    await TaskRepo.removeByBoard(boardId);
+    return true;
   }
 }
 

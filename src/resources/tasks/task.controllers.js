@@ -1,11 +1,15 @@
-const { map } = require('lodash');
+const { isEmpty, isNil } = require('lodash');
 const taskService = require('./task.service');
-const Task = require('./task.model');
 
 const getTasks = async (req, res) => {
   const { boardId } = req.params;
   const tasks = await taskService.getTasks(boardId);
-  res.json(map(tasks, Task.toResponse));
+
+  if (isEmpty(tasks)) {
+    res.status(404).send();
+  } else {
+    res.status(200).json(tasks);
+  }
 };
 
 const createTask = async (req, res) => {
@@ -14,14 +18,18 @@ const createTask = async (req, res) => {
     params: { boardId }
   } = req;
 
-  const task = await taskService.createTask(boardId, body);
+  const task = await taskService.createTask(boardId, { ...body, boardId });
   res.status(200).json(task);
 };
 
 const getTask = async (req, res) => {
   const { boardId, taskId } = req.params;
   const task = await taskService.getTask(boardId, taskId);
-  res.status(200).json(task);
+  if (!isNil(task)) {
+    res.status(200).json(task);
+  } else {
+    res.status(404).send({ error: 'Board not found' });
+  }
 };
 
 const updateTask = async (req, res) => {
@@ -32,11 +40,17 @@ const updateTask = async (req, res) => {
   const task = await taskService.updateTask(boardId, taskId, body);
   res.status(200).json(task);
 };
+
 const deleteTask = async (req, res) => {
   const { boardId, taskId } = req.params;
-  await taskService.deleteTask(boardId, taskId);
-  res.status(204).json();
+  const isRemoved = await taskService.deleteTask(boardId, taskId);
+  if (isRemoved) {
+    res.sendStatus(204);
+  } else {
+    res.sendStatus(404);
+  }
 };
+
 module.exports = {
   getTasks,
   createTask,

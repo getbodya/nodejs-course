@@ -1,5 +1,6 @@
 const { find, findIndex, assign, remove } = require('lodash');
 const User = require('./user.model');
+const TaskRepo = require('../tasks/task.memory.repository');
 
 class UserRepo {
   constructor() {
@@ -40,6 +41,7 @@ class UserRepo {
 
   async delete(id) {
     remove(this.users, { id });
+    await TaskRepo.removeUser(id);
   }
 }
 

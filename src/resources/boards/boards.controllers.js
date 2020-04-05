@@ -18,7 +18,7 @@ const getBoard = async (req, res) => {
   if (!isNil(board)) {
     res.json(board);
   } else {
-    res.json({});
+    res.status(404).send({ error: 'Board not found' });
   }
 };
 

@@ -1,4 +1,15 @@
-const { filter, head, findIndex, assign, remove } = require('lodash');
+const {
+  filter,
+  head,
+  findIndex,
+  assign,
+  remove,
+  forEach,
+  eq,
+  get,
+  set,
+  isEmpty
+} = require('lodash');
 const Task = require('./task.model');
 
 class TaskRepo {
@@ -65,22 +76,39 @@ class TaskRepo {
   }
 
   async getById(boardId, taskId) {
-    return Task.toResponse(head(filter(this.tasks, { boardId, id: taskId })));
+    return head(filter(this.tasks, { boardId, id: taskId }));
   }
 
   async create(boardId, data) {
     const newTask = new Task(data);
     this.tasks.push(newTask);
-    return Task.toResponse(newTask);
+    return newTask;
   }
 
   async update(boardId, taskId, data) {
     const taskIndex = findIndex(this.tasks, { boardId, id: taskId });
     this.tasks[taskIndex] = assign(this.tasks[taskIndex], data);
-    return Task.toResponse(this.tasks[taskIndex]);
+    return this.tasks[taskIndex];
   }
   async delete(boardId, taskId) {
-    remove(this.tasks, { boardId, id: taskId });
+    const removedTask = remove(this.tasks, { boardId, id: taskId });
+
+    if (isEmpty(removedTask)) {
+      return false;
+    }
+    return true;
+  }
+
+  async removeUser(id) {
+    forEach(this.tasks, (task, taskIndex) => {
+      if (eq(get(task, 'userId'), id)) {
+        set(this.tasks, `[${taskIndex}].userId`, null);
+      }
+    });
+  }
+
+  async removeByBoard(boardId) {
+    remove(this.tasks, { boardId });
   }
 }
 module.exports = new TaskRepo();
