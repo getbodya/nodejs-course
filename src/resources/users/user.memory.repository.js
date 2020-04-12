@@ -1,4 +1,4 @@
-const { find, findIndex, assign, remove } = require('lodash');
+const { find, findIndex, assign, remove, isEmpty } = require('lodash');
 const User = require('./user.model');
 const TaskRepo = require('../tasks/task.memory.repository');
 
@@ -40,8 +40,12 @@ class UserRepo {
   }
 
   async delete(id) {
-    remove(this.users, { id });
+    const removedUser = remove(this.users, { id });
+    if (isEmpty(removedUser)) {
+      return false;
+    }
     await TaskRepo.removeUser(id);
+    return true;
   }
 }
 

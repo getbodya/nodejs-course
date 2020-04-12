@@ -1,4 +1,6 @@
 const { isNil } = require('lodash');
+const { ValidationError } = require('../../utils/validation-error');
+const { NOT_FOUND, NO_CONTENT, getStatusText } = require('http-status-codes');
 const boardService = require('./boards.sevice');
 
 const getBoards = async (req, res) => {
@@ -12,17 +14,17 @@ const createBoard = async (req, res) => {
   res.json(newBoard);
 };
 
-const getBoard = async (req, res) => {
+const getBoard = async (req, res, next) => {
   const { boardId } = req.params;
   const board = await boardService.getBoard(boardId);
   if (!isNil(board)) {
     res.json(board);
   } else {
-    res.status(404).send({ error: 'Board not found' });
+    next(new ValidationError(NOT_FOUND));
   }
 };
 
-const updateBoard = async (req, res) => {
+const updateBoard = async (req, res, next) => {
   const {
     body,
     params: { boardId }
@@ -33,17 +35,17 @@ const updateBoard = async (req, res) => {
   if (!isNil(board)) {
     res.json(board);
   } else {
-    res.json({});
+    next(new ValidationError(NOT_FOUND));
   }
 };
 
-const deleteBoard = async (req, res) => {
+const deleteBoard = async (req, res, next) => {
   const { boardId } = req.params;
   const isRemoved = await boardService.deleteBoard(boardId);
   if (isRemoved) {
-    res.status(204).send();
+    res.status(NO_CONTENT).send(getStatusText(NO_CONTENT));
   } else {
-    res.status(404).send();
+    next(new ValidationError(NOT_FOUND));
   }
 };
 

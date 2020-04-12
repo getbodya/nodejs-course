@@ -1,15 +1,4 @@
-const {
-  filter,
-  head,
-  findIndex,
-  assign,
-  remove,
-  forEach,
-  eq,
-  get,
-  set,
-  isEmpty
-} = require('lodash');
+const { filter, head, findIndex, assign, remove, forEach, eq, get, set, isEmpty } = require('lodash');
 const Task = require('./task.model');
 
 class TaskRepo {

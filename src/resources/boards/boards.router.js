@@ -1,11 +1,5 @@
 const router = require('express').Router();
-const {
-  getBoards,
-  createBoard,
-  getBoard,
-  updateBoard,
-  deleteBoard
-} = require('./boards.controllers');
+const { getBoards, createBoard, getBoard, updateBoard, deleteBoard } = require('./boards.controllers');
 
 router.route('/').get(getBoards);
 router.route('/').post(createBoard);

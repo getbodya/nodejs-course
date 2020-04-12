@@ -1,14 +1,16 @@
 const { isEmpty, isNil } = require('lodash');
+const { ValidationError } = require('../../utils/validation-error');
+const { NOT_FOUND, NO_CONTENT, OK } = require('http-status-codes');
 const taskService = require('./task.service');
 
-const getTasks = async (req, res) => {
+const getTasks = async (req, res, next) => {
   const { boardId } = req.params;
   const tasks = await taskService.getTasks(boardId);
 
   if (isEmpty(tasks)) {
-    res.status(404).send();
+    next(new ValidationError(NOT_FOUND));
   } else {
-    res.status(200).json(tasks);
+    res.status(OK).json(tasks);
   }
 };
 
@@ -19,16 +21,16 @@ const createTask = async (req, res) => {
   } = req;
 
   const task = await taskService.createTask(boardId, { ...body, boardId });
-  res.status(200).json(task);
+  res.status(OK).json(task);
 };
 
-const getTask = async (req, res) => {
+const getTask = async (req, res, next) => {
   const { boardId, taskId } = req.params;
   const task = await taskService.getTask(boardId, taskId);
   if (!isNil(task)) {
-    res.status(200).json(task);
+    res.status(OK).json(task);
   } else {
-    res.status(404).send({ error: 'Board not found' });
+    next(new ValidationError(NOT_FOUND));
   }
 };
 
@@ -38,16 +40,16 @@ const updateTask = async (req, res) => {
     params: { boardId, taskId }
   } = req;
   const task = await taskService.updateTask(boardId, taskId, body);
-  res.status(200).json(task);
+  res.status(OK).json(task);
 };
 
-const deleteTask = async (req, res) => {
+const deleteTask = async (req, res, next) => {
   const { boardId, taskId } = req.params;
   const isRemoved = await taskService.deleteTask(boardId, taskId);
   if (isRemoved) {
-    res.sendStatus(204);
+    res.sendStatus(NO_CONTENT);
   } else {
-    res.sendStatus(404);
+    next(new ValidationError(NOT_FOUND));
   }
 };
 

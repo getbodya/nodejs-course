@@ -1,4 +1,8 @@
 const { isNil } = require('lodash');
+const { ValidationError } = require('../../utils/validation-error');
+const { BAD_REQUEST, NOT_FOUND, NO_CONTENT } = require('http-status-codes');
+const { includesFields } = require('../../utils/check-body');
+
 const User = require('./user.model');
 const usersService = require('./user.service');
 
@@ -7,17 +11,18 @@ const getUsers = async (req, res) => {
   res.json(users.map(User.toResponse));
 };
 
-const getUser = async (req, res) => {
+const getUser = async (req, res, next) => {
   const { userId } = req.params;
   const user = await usersService.getUser(userId);
+
   if (!isNil(user)) {
-    res.json(User.toResponse(user));
+    res.status(200).json(User.toResponse(user));
   } else {
-    res.json({});
+    next(new ValidationError(NOT_FOUND));
   }
 };
 
-const updateUser = async (req, res) => {
+const updateUser = async (req, res, next) => {
   const {
     body,
     params: { userId }
@@ -26,20 +31,28 @@ const updateUser = async (req, res) => {
   if (!isNil(user)) {
     res.json(User.toResponse(user));
   } else {
-    res.json({});
+    next(new ValidationError(NOT_FOUND));
   }
 };
 
-const createUser = async (req, res) => {
+const createUser = async (req, res, next) => {
   const { body } = req;
-  const user = await usersService.createUser(body);
-  res.json(User.toResponse(user));
+  if (includesFields(body, 'name', 'login', 'password')) {
+    const user = await usersService.createUser(body);
+    res.json(User.toResponse(user));
+  } else {
+    next(new ValidationError(BAD_REQUEST));
+  }
 };
 
-const deleteUser = async (req, res) => {
+const deleteUser = async (req, res, next) => {
   const { userId } = req.params;
-  await usersService.deleteUser(userId);
-  res.status(204).send();
+  const isRemoved = await usersService.deleteUser(userId);
+  if (isRemoved) {
+    res.status(NO_CONTENT).send('The user has been deleted');
+  } else {
+    next(new ValidationError(NOT_FOUND));
+  }
 };
 
 module.exports = {

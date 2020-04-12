@@ -1,9 +1,6 @@
 const { request: unauthorizedRequest, routes } = require('../lib');
 const debug = require('debug')('rs:test:boards');
-const {
-  createAuthorizedRequest,
-  shouldAuthorizationBeTested
-} = require('../utils');
+const { createAuthorizedRequest, shouldAuthorizationBeTested } = require('../utils');
 
 const TEST_BOARD_DATA = {
   title: 'Autotest board',
@@ -138,9 +135,7 @@ describe('Boards suite', () => {
         });
 
       // Test
-      await request
-        .delete(routes.boards.delete(boardId))
-        .then(res => expect(res.status).oneOf([200, 204]));
+      await request.delete(routes.boards.delete(boardId)).then(res => expect(res.status).oneOf([200, 204]));
 
       await request.get(routes.boards.getById(boardId)).expect(404);
     });
@@ -184,15 +179,9 @@ describe('Boards suite', () => {
         )
       );
       // Test:
-      await request
-        .delete(routes.boards.delete(boardId))
-        .then(response => expect(response.status).oneOf([200, 204]));
+      await request.delete(routes.boards.delete(boardId)).then(response => expect(response.status).oneOf([200, 204]));
 
-      await Promise.all(
-        boardTaskIds.map(async taskId =>
-          request.get(routes.tasks.getById(boardId, taskId)).expect(404)
-        )
-      );
+      await Promise.all(boardTaskIds.map(async taskId => request.get(routes.tasks.getById(boardId, taskId)).expect(404)));
     });
   });
 });
