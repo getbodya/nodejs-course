@@ -2,23 +2,24 @@ const { isNil } = require('lodash');
 const { ValidationError } = require('../../utils/validation-error');
 const { NOT_FOUND, NO_CONTENT, getStatusText } = require('http-status-codes');
 const boardService = require('./boards.sevice');
+const Board = require('./boards.model');
 
 const getBoards = async (req, res) => {
   const boards = await boardService.getAll();
-  res.json(boards);
+  res.json(boards.map(Board.toResponse));
 };
 
 const createBoard = async (req, res) => {
   const { body } = req;
   const newBoard = await boardService.createBoard(body);
-  res.json(newBoard);
+  res.json(Board.toResponse(newBoard));
 };
 
 const getBoard = async (req, res, next) => {
   const { boardId } = req.params;
   const board = await boardService.getBoard(boardId);
   if (!isNil(board)) {
-    res.json(board);
+    res.json(Board.toResponse(board));
   } else {
     next(new ValidationError(NOT_FOUND));
   }
@@ -31,9 +32,8 @@ const updateBoard = async (req, res, next) => {
   } = req;
 
   const board = await boardService.updateBoard(boardId, body);
-
   if (!isNil(board)) {
-    res.json(board);
+    res.json(Board.toResponse(board));
   } else {
     next(new ValidationError(NOT_FOUND));
   }

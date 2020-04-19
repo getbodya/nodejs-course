@@ -1,4 +1,7 @@
 const { PORT } = require('./common/config');
 const app = require('./app');
+const { dbConnection } = require('./db');
 
-app.listen(PORT, () => console.log(`App is running on http://localhost:${PORT}`));
+const runApp = () => app.listen(PORT, () => console.log(`App is running on http://localhost:${PORT}`));
+
+dbConnection(runApp);

@@ -1,19 +1,34 @@
 const uuid = require('uuid');
-const { map, set } = require('lodash');
+const { map } = require('lodash');
+const mongoose = require('mongoose');
 
-class Board {
-  constructor({ id = uuid(), title = 'default board', columns = [] } = {}) {
-    this.id = id;
-    this.title = title;
-    this.columns = this.mapColumns(columns);
+const columnShema = new mongoose.Schema({
+  title: String,
+  order: Number,
+  _id: {
+    type: String,
+    default: uuid
   }
+});
 
-  mapColumns(columns) {
-    return map(columns, column => {
-      set(column, 'id', uuid());
-      return column;
-    });
+const boardShema = new mongoose.Schema({
+  title: String,
+  columns: [columnShema],
+  _id: {
+    type: String,
+    default: uuid
   }
-}
+});
+
+boardShema.statics.toResponse = board => {
+  const { _id, title, columns } = board;
+  return {
+    id: _id,
+    title,
+    columns: map(columns, ({ title, order, _id }) => ({ title, order, id: _id }))
+  };
+};
+
+const Board = mongoose.model('Board', boardShema);
 
 module.exports = Board;
