@@ -9,6 +9,10 @@ const getById = async id => {
   return User.findById(id);
 };
 
+const getByProp = async prop => {
+  return User.findOne(prop);
+};
+
 const update = async (id, data) => {
   return User.updateOne({ _id: id }, data);
 };
@@ -24,4 +28,4 @@ const deleteById = async id => {
   return isRemove;
 };
 
-module.exports = { getAll, getById, update, create, deleteById };
+module.exports = { getAll, getById, getByProp, update, create, deleteById };
